@@ -30,7 +30,7 @@ SPECIFIC_LINES = [
 WALL, DARK = 'X '
 
 def line2grid(line):
-    """ Convert a specific line into a grid and a number of boxes. """
+    """ Convert a specific line into a grid. """
     dim, line = line.split(':')
     nb_cols, nb_rows = map(int, dim.split('x'))
     # 'B' --> WALL; '01234' not change; 'a' --> DARK * 1, 'b' --> DARK * 2, ...
