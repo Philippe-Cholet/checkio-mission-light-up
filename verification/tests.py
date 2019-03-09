@@ -51,5 +51,6 @@ for n, grid in enumerate(map(line2grid, SPECIFIC_LINES)):
     TESTS[category].append({'input': grid, 'answer': grid})
 
 # # ----- for initial code ----- #
+# from pprint import pprint
 # GRIDS = tuple(d['input'] for d in TESTS['Basics'])
-# print('GRIDS =', GRIDS)
+# pprint(GRIDS, width=40)
