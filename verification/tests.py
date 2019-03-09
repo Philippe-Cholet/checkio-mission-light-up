@@ -29,6 +29,7 @@ SPECIFIC_LINES = [
 
 WALL, DARK = 'X '
 
+
 def line2grid(line):
     """ Convert a specific line into a grid. """
     dim, line = line.split(':')
@@ -36,19 +37,19 @@ def line2grid(line):
     # 'B' --> WALL; '01234' not change; 'a' --> DARK * 1, 'b' --> DARK * 2, ...
     translation = (WALL if s == 'B' else
                    (s if s.isdigit() else
-                    (DARK for _ in range(ord(s) - ord('a') + 1)))
+                    DARK * (ord(s) - ord('a') + 1))
                    for s in line)
     line = chain.from_iterable(translation)
-    grid = (''.join(next(line) for _ in range(nb_cols)) for _ in range(nb_rows))
-    return tuple(grid)
+    grid = ((next(line) for _ in range(nb_cols)) for _ in range(nb_rows))
+    return tuple(map(''.join, grid))
 
-TESTS = {"Basics": [], "Extra": []}
+
+TESTS = {'Basics': [], 'Extra': []}
 
 for n, grid in enumerate(map(line2grid, SPECIFIC_LINES)):
-    category = ("Basics", "Extra")[n >= 4]
-    TESTS[category].append({"input": grid, "answer": grid})
+    category = ('Basics', 'Extra')[n >= 4]
+    TESTS[category].append({'input': grid, 'answer': grid})
 
-### for initial code ###
-##GRIDS = (d["input"] for d in TESTS["Basics"])
-##GRIDS = tuple((f"{len(grid)}x{len(grid[0])}", grid) for grid in GRIDS)
-##print('GRIDS =', GRIDS)
+# # ----- for initial code ----- #
+# GRIDS = tuple(d['input'] for d in TESTS['Basics'])
+# print('GRIDS =', GRIDS)
