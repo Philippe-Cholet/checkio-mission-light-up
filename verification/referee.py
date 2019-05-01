@@ -41,14 +41,14 @@ def checker(grid, result):
         if not (isinstance(elem, (tuple, list)) and len(elem) == 2
                 and all(isinstance(n, int) for n in elem)):
             return False, ("Your iterable result should contain "
-                           "tuples/lists of 2 ints.")
+                           "tuples/lists of 2 ints.", "Invalid")
         i, j = light = tuple(elem)
         if light in user_lights:  # Duplicates are not allowed.
             return False, ("You can't put two lights "
-                           f"at the same place {light}.")
+                           f"at the same place {light}.", "Invalid")
         if not (0 <= i < nb_rows and 0 <= j < nb_cols):
             return False, ("You can't put a light outside the grid "
-                           f"like at {light}.")
+                           f"like at {light}.", "Invalid")
         user_lights.add(light)
     # Check if the result respect numbers in the grid.
     digits = ((i, j, int(cell))
@@ -59,13 +59,16 @@ def checker(grid, result):
                               (i + 1, j), (i, j + 1)} & user_lights)
         if nb_user_lights != nb_lights:
             return False, (f"The cell {(i, j)} should have {nb_lights} "
-                           f"neighboring lights, not {nb_user_lights}.")
+                           f"neighboring lights, not {nb_user_lights}.",
+                           "Valid")
     # Put user lights on the grid, check if it's possible.
     for i, j in user_lights:
         if grid[i][j] == LIT:  # LIGHTS CONFLICT!
-            return False, f"Light at {(i, j)} is wrongly lit by another."
+            return False, (f"Light at {(i, j)} is wrongly lit by another.",
+                            "Valid")
         if grid[i][j] in WALLS:
-            return False, f"You can't put a light in the wall at {(i, j)}."
+            return False, (f"You can't put a light in the wall at {(i, j)}."
+                            ,"Valid")
         grid[i][j] = LIGHT  # Put a light in DARKness.
         for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
             ni, nj = i + di, j + dj
@@ -76,8 +79,9 @@ def checker(grid, result):
     # Finally, check if the all grid is lit.
     nb_dark = sum(row.count(DARK) for row in grid)
     if nb_dark:
-        return False, f"There are still {nb_dark} cell(s) in the dark."
-    return True, "Great!"
+        return False, (f"There are still {nb_dark} cell(s) in the dark.",
+                "Valid")
+    return True, ("Great!", "Valid")
 
 
 cover_iterable = '''
