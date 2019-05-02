@@ -12,6 +12,7 @@ requirejs(['ext_editor_io', 'jquery_190', 'raphael_210'],
             const result = data.ext.result
             const output = data.out
             const result_addon_01 = data.ext.result_addon[1]
+            const result_addon_02 = data.ext.result_addon[2]
 
             if (input[0].length >= 50) {
                 return
@@ -23,8 +24,14 @@ requirejs(['ext_editor_io', 'jquery_190', 'raphael_210'],
                         'stroke': '#2080B8',
                     },
                     block: {
-                        'stroke': '#2080B8',
-                        'fill': '#8FC7ED',
+                        normal: {
+                            'stroke': '#2080B8',
+                            'fill': '#8FC7ED',
+                        },
+                        error: {
+                            'stroke': '#2080B8',
+                            'fill': 'red',
+                        },
                     },
                 },
                 number: {
@@ -33,7 +40,12 @@ requirejs(['ext_editor_io', 'jquery_190', 'raphael_210'],
                     'fill': '#163e69',
                 },
                 light: {
-                    'fill': 'orange',
+                    normal: {
+                        'fill': 'orange',
+                    },
+                    error: {
+                        'fill': 'red',
+                    },
                 },
                 ray: {
                     'stroke': '#faba00',
@@ -136,7 +148,14 @@ requirejs(['ext_editor_io', 'jquery_190', 'raphael_210'],
                     = paper.path(lamp.join(' ')).translate(-246, -246)
                 path.scale(1/SCALE).translate(SIZE/2*SCALE, SIZE/2*SCALE)
                 path.translate(x*SIZE*SCALE, y*SIZE*SCALE)
-                path.attr({'stroke-width': 1/(width/7)}).attr(attr.light)
+                path.attr({'stroke-width': 1/(width/7)}).attr(
+                    attr.light.normal)
+                if (result_addon_02) {
+                    const [ey, ex] = result_addon_02
+                    if (ey === y && ex === x) {
+                        path.attr(attr.light.error)
+                    }
+                }
               })
             }
 
@@ -151,13 +170,20 @@ requirejs(['ext_editor_io', 'jquery_190', 'raphael_210'],
                         paper.rect(SIZE*c+os, SIZE*r+os, SIZE, SIZE).attr(
                             attr.grid.empty)
                     } else {
-                        paper.rect(SIZE*c+os, SIZE*r+os, SIZE, SIZE).attr(
-                            attr.grid.block)
+                        const block = paper.rect(
+                            SIZE*c+os, SIZE*r+os, SIZE, SIZE).attr(
+                                attr.grid.block.normal)
                         if (! isNaN(input[r][c])) {
                             const num = paper.text(SIZE*c+os+SIZE*.5, 
                                 SIZE*r+os+SIZE*.5, input[r][c])
                             num.attr({'font-size': 200/width}).attr(
                                 attr.number)
+                        }
+                        if (result_addon_02) {
+                            const [ey, ex] = result_addon_02
+                            if (ey === r && ex === c) {
+                                block.attr(attr.grid.block.error)
+                            }
                         }
                     }
                 }

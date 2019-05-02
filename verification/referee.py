@@ -37,6 +37,7 @@ def checker(grid, result):
     nb_rows, nb_cols = len(grid), len(grid[0])
     # Check types and transform result into a Set[Tuple[int]].
     user_lights = set()
+    buried_lights = set()
     for elem in result:
         if not (isinstance(elem, (tuple, list)) and len(elem) == 2
                 and all(isinstance(n, int) for n in elem)):
@@ -50,25 +51,28 @@ def checker(grid, result):
             return False, ("You can't put a light outside the grid "
                            f"like at {light}.", "Invalid")
         user_lights.add(light)
+        if grid[i][j] in WALLS:
+            buried_lights.add(light)
     # Check if the result respect numbers in the grid.
     digits = ((i, j, int(cell))
               for i, row in enumerate(grid)
               for j, cell in enumerate(row) if cell.isdigit())
     for i, j, nb_lights in digits:
         nb_user_lights = len({(i - 1, j), (i, j - 1),
-                              (i + 1, j), (i, j + 1)} & user_lights)
+                              (i + 1, j), (i, j + 1)} & user_lights
+                              - buried_lights)
         if nb_user_lights != nb_lights:
             return False, (f"The cell {(i, j)} should have {nb_lights} "
                            f"neighboring lights, not {nb_user_lights}.",
-                           "Valid")
+                           "Valid", (i, j))
     # Put user lights on the grid, check if it's possible.
     for i, j in user_lights:
         if grid[i][j] == LIT:  # LIGHTS CONFLICT!
             return False, (f"Light at {(i, j)} is wrongly lit by another.",
-                            "Valid")
+                            "Valid", (i, j))
         if grid[i][j] in WALLS:
             return False, (f"You can't put a light in the wall at {(i, j)}."
-                            ,"Valid")
+                            ,"Valid", (i, j))
         grid[i][j] = LIGHT  # Put a light in DARKness.
         for di, dj in ((-1, 0), (1, 0), (0, -1), (0, 1)):
             ni, nj = i + di, j + dj
